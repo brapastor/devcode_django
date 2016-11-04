@@ -5,8 +5,8 @@ class UserManager(BaseUserManager):
 
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         #preguntar si viene un email y sino viene haremos que mande el error
-        if not email:
-            raise ValueError('Email debe ser obligatorio')
+        # if not email:
+        #     raise ValueError('Email debe ser obligatorio')
         email =  self.normalize_email(email)
         user = self.model(username=username, email= email,
                           is_active = True, is_staff = is_staff, is_superuser = is_superuser, **extra_fields)
@@ -32,6 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name= models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     avatar = models.URLField()
+    status = models.BooleanField(default=False)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

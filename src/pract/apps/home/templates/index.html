@@ -9,7 +9,6 @@
                 <a href="#" class="padding-minus">
                     <img src="{{ user.avatar }}" class="foto-perfil" alt="">
                 </a>
-                {{ user.avatar }}
             </li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -17,9 +16,11 @@
                     <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#">Perfil</a></li>
+                    <li><a href="{% url "users:userdetail" user.username %}">Perfil</a></li>
+                    {#                    <li><a href="">Perfil</a></li>#}
                     <li class="divider"></li>
-                    <li><a href="#">Salir <span class="glyphicon glyphicon-log-out"></span></a></li>
+                    <li><a href="{% url 'users:logout' %}">Salir <span class="glyphicon glyphicon-log-out"></span></a>
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -33,21 +34,36 @@
                     <h1>Bienvenidos a DevAsk!</h1>
                     <p class="subtitulo-jumbotron">El Sistema de Discusiones para Programadores</p>
                     <p>
-                        <a href="preguntas/ask/">
+                        <a href="/preguntar/">
                             <button type="button" class="btn btn-primary btn-lg btn-pregunta">Has tu Pregunta!</button>
                         </a>
                     </p>
                 </div>
             </div>
             <div class="col-md-4 login">
-                <h3>Conectate con:</h3>
-                <p>
-                    <a href="{% url 'social:begin' 'facebook' %}"
-                       class="btn btn-primary btn-lg btn-lg-customize-fb"><span
-                            class="icon-facebook"></span>Facebook</a>
-                    <a href="{% url 'social:begin' 'twitter' %}" type="button"
-                       class="btn btn-primary btn-lg btn-lg-customize-tw"><span class="icon-twitter"></span>Twitter</a>
-                </p>
+                {% if user.is_authenticated %}
+                    <h3>Asocia tu cuenta</h3>
+                    <p>
+                        {% ifequal backends.not_associated 'facebook' %}
+                            <a href="{% url 'social:begin' 'twitter' %}" type="button"
+                               class="btn btn-primary btn-lg btn-lg-customize-tw"><span class="icon-twitter"></span>Twitter</a>
+                        {% else %}
+                            <a href="{% url 'social:begin' 'facebook' %}"
+                               class="btn btn-primary btn-lg btn-lg-customize-fb"><span
+                                    class="icon-facebook"></span>Facebook</a>
+                        {% endifequal %}
+                    </p>
+                {% else %}
+                    <h3>Conectate con:</h3>
+                    <p>
+                        <a href="{% url 'social:begin' 'facebook' %}"
+                           class="btn btn-primary btn-lg btn-lg-customize-fb"><span
+                                class="icon-facebook"></span>Facebook</a>
+                        <a href="{% url 'social:begin' 'twitter' %}" type="button"
+                           class="btn btn-primary btn-lg btn-lg-customize-tw"><span class="icon-twitter"></span>Twitter</a>
+                    </p>
+                {% endif %}
+
             </div>
         </div>
 
@@ -59,15 +75,22 @@
                             Top 5 de Preguntas:
                         </a>
                     </li>
+
+                    <li class="top">
+                        <a href="/preguntas/">
+                            Ver todas las preguntas
+                        </a>
+                    </li>
+
                     <li>
                         <a href="#">
-                            <span class="badge pull-right badge-customize">42</span>
+                            <span class="badge pull-right badge-customize">{{ total_question }}</span>
                             Preguntas
                         </a>
                     </li>
                     <li>
                         <a href="#">
-                            <span class="badge pull-right badge-customize">1004</span>
+                            <span class="badge pull-right badge-customize">{{ total_users }}</span>
                             Usuarios
                         </a>
                     </li>
@@ -79,66 +102,28 @@
                     </li>
                 </ul>
 
-                <h4>¿Por qué me sale un error en la instalación Django en windows?
-                    <small>@Djeancar</small>
-                    <span><img src="{{ user.avatar }}" class="foto-perfil"></span></h4>
-                <blockquote class="bloquesito">
-                    <p class="bg-info bg-info-customize">Vistos <span>0</span></p>
-                    <p class="bg-warning bg-info-customize">Respuestas <span>0</span></p>
-                    <p class="bg-success bg-info-customize">Votos <span>0</span></p>
-                    <p class="bg-success bg-fecha-customize">Publicado hace: <span>30 min</span></p>
-                    <p class="tags">
-                        <span>Etiquetas:</span>
-                        <button type="button" class="btn btn-default btn-xs">Django 1.5</button>
-                        <button type="button" class="btn btn-default btn-xs">Django 1.6</button>
-                        <button type="button" class="btn btn-default btn-xs">Node</button>
-                    </p>
-                </blockquote>
+                {% for question, tags in home_list %}
 
-                <h4>¿Por qué me sale Error 500 en Django?
-                    <small>@Jhonazsh</small>
-                    <span><img src="{% static 'img/jhonazsh.jpg' %}" class="foto-perfil"></span></h4>
-                <blockquote class="bloquesito">
-                    <p class="bg-info bg-info-customize">Vistos <span>0</span></p>
-                    <p class="bg-warning bg-info-customize">Respuestas <span>0</span></p>
-                    <p class="bg-success bg-info-customize">Votos <span>0</span></p>
-                    <p class="bg-success bg-fecha-customize">Publicado hace: <span>3 hr</span></p>
-                    <p class="tags">
-                        <span>Etiquetas:</span>
-                        <button type="button" class="btn btn-default btn-xs">Node</button>
-                        <button type="button" class="btn btn-default btn-xs">Django 1.6</button>
-                    </p>
-                </blockquote>
+                    <h4>
+                        <a href="/pregunta/{{ question.slug }}/">
+                            {{ question.title }}
+                        </a>
+                        <small>{{ question.user }}</small>
+                        <span><img src="{{ question.user.avatar }}" class="foto-perfil"></span></h4>
+                    <blockquote class="bloquesito">
+                        <p class="bg-info bg-info-customize">Vistos <span>0</span></p>
+                        <p class="bg-warning bg-info-customize">Respuestas <span>0</span></p>
+                        <p class="bg-success bg-info-customize">Votos <span>0</span></p>
+                        <p class="bg-success bg-fecha-customize">Publicado el: <span>{{ question.modified }}</span></p>
+                        <p class="tags">
+                            <span>Etiquetas:</span>
+                            {% for tag in tags %}
+                                <button type="button" class="btn btn-default btn-xs">{{ tag.nombre }}</button>
+                            {% endfor %}
+                        </p>
+                    </blockquote>
 
-                <h4>¿Qué es mejor Vistas basadas en clases o vistas basadas en funciones?
-                    <small>@Edwinpgm</small>
-                    <span><img src="{% static 'img/edwinpgm.jpg' %}" class="foto-perfil"></span></h4>
-                <blockquote class="bloquesito">
-                    <p class="bg-info bg-info-customize">Vistos <span>0</span></p>
-                    <p class="bg-warning bg-info-customize">Respuestas <span>0</span></p>
-                    <p class="bg-success bg-info-customize">Votos <span>0</span></p>
-                    <p class="bg-success bg-fecha-customize">Publicado hace: <span>4 hr</span></p>
-                    <p class="tags">
-                        <span>Etiquetas:</span>
-                        <button type="button" class="btn btn-default btn-xs">VBC</button>
-                        <button type="button" class="btn btn-default btn-xs">VBF</button>
-                    </p>
-                </blockquote>
-
-                <h4>¿Cómo usar multisettings de django en un proyecto?
-                    <small>@Mayraisav</small>
-                    <span><img src="{% static 'img/myraisav.jpg' %}" class="foto-perfil"></span></h4>
-                <blockquote class="bloquesito">
-                    <p class="bg-info bg-info-customize">Vistos <span>0</span></p>
-                    <p class="bg-warning bg-info-customize">Respuestas <span>0</span></p>
-                    <p class="bg-success bg-info-customize">Votos <span>0</span></p>
-                    <p class="bg-success bg-fecha-customize">Publicado hace: <span>15 hr</span></p>
-                    <p class="tags">
-                        <span>Etiquetas:</span>
-                        <button type="button" class="btn btn-default btn-xs">Django 1.6</button>
-                    </p>
-                </blockquote>
-
+                {% endfor %}
             </div>
             <div class="col-md-4 contenido-aside">
 

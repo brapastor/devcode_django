@@ -29,6 +29,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
             ],
         },
     },
@@ -63,4 +64,6 @@ SOCIAL_AUTH_FACEBOOK_SECRET = '40f61e5e0418dd9f362152b44cabe463'
 
 SOCIAL_AUTH_TWITTER_KEY = 'TtaObKv9aSwTK3oqiMWXW1CqI'
 SOCIAL_AUTH_TWITTER_SECRET = 'dyLRsBzXjY3zUOLA9m1HsbFFX9qjTQllyRq4h9MsbyJ597Wdhb'
+
+MANDRILL_API_KEY = 'L3VE91yaZA7IXPgIHa8QdA'
 

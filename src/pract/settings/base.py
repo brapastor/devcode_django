@@ -13,7 +13,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pract.apps.home',
     'pract.apps.users',
+    'pract.apps.discuss',
     'social.apps.django_app.default',
+    'djrill',
 
 ]
 
@@ -52,7 +54,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 #VARIABLE DONDE SE DIRIGE DESPUES DE LOGUEARSE
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/extra-data/'
 
 #ERROR EN EL LOGEO
 SOCIAL_AUTH_LOGIN_URL = '/error/'
@@ -80,4 +82,9 @@ SOCIAL_AUTH_PIPELINE = (
 
 )
 
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
 
+# from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+#
+# TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+# )
